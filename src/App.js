@@ -1,13 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useFilePicker } from 'use-file-picker';
 import { useIndexedDBStore } from 'use-indexeddb';
-import {
-    PlayArrowRounded,
-    SkipNextRounded,
-    SkipPreviousRounded,
-    PauseRounded,
-    FolderOpenRounded
-} from '@material-ui/icons';
 
 import './styles.css';
 import { IconBtn, TrackList } from './components';
@@ -16,6 +9,7 @@ import { ReactComponent as Play } from './icons/play.svg';
 import { ReactComponent as Pause } from './icons/pause.svg';
 import { ReactComponent as Next } from './icons/next.svg';
 import { ReactComponent as Prev } from './icons/previous.svg';
+import { ReactComponent as Folder } from './icons/folder.svg';
 
 const SONGS_ID = 1;
 
@@ -29,6 +23,8 @@ const App = () => {
             isPlaying,
             tracks,
             currentTrack,
+            duration,
+            trackProgress,
             audioRef,
         },
         {
@@ -96,7 +92,7 @@ const App = () => {
             <div className="card">
                 <IconBtn
                     onClick={handleClick}
-                    Icon={FolderOpenRounded}
+                    Icon={Folder}
                 />
                 <TrackList
                     tracks={tracksNames}
@@ -114,6 +110,14 @@ const App = () => {
                     Your browser does not support the
                     <code>audio</code> element.
                 </audio>
+                <input
+                    className="progress"
+                    type="range"
+                    value={trackProgress}
+                    step="1"
+                    min="0"
+                    max={duration}
+                />
                 <div className="btnGroup">
                     <IconBtn onClick={onPrevTrack} Icon={Prev} />
                     {
