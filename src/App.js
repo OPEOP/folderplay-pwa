@@ -94,18 +94,15 @@ const App = () => {
     return (
         <div className="container">
             <div className="card">
-                <div>
-                    <p>PWA Player</p>
-                    <IconBtn
-                        onClick={handleClick}
-                        Icon={FolderOpenRounded}
-                    />
-                    <TrackList
-                        tracks={tracksNames}
-                        selected={currentTrack?.name}
-                        onClick={onTrackChange}
-                    />
-                </div>
+                <IconBtn
+                    onClick={handleClick}
+                    Icon={FolderOpenRounded}
+                />
+                <TrackList
+                    tracks={tracksNames}
+                    selected={currentTrack?.name}
+                    onClick={onTrackChange}
+                />
                 <audio
                     hidden
                     ref={audioRef}
@@ -117,7 +114,7 @@ const App = () => {
                     Your browser does not support the
                     <code>audio</code> element.
                 </audio>
-                <div>
+                <div className="btnGroup">
                     <IconBtn onClick={onPrevTrack} Icon={Prev} />
                     {
                         isPlaying

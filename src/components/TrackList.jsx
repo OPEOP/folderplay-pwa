@@ -1,21 +1,24 @@
 import { memo } from 'react';
-import { arrayOf,  func, string } from 'prop-types';
+import { arrayOf, func, string } from 'prop-types';
 
 const TrackList = ({ tracks, selected, onClick }) => {
     return (
-        <ul>
+        <ul className="trackList">
             {
-                tracks.map(title => (
-                    <li
-                        className="pointer"
-                        key={title}
-                        onClick={() => onClick(title)}
-                    >
-                        <p className={`${title === selected ? 'selectedSong' : ''}`}>
-                            {title}
-                        </p>
-                    </li>
-                ))
+                tracks.map(title => {
+                    const trimmedTitle = title.slice(0, title.length - 3);
+                    const isSelected = title === selected;
+
+                    return (
+                        <li
+                            className={`track ${isSelected ? 'selectedSong' : ''}`}
+                            key={title}
+                            onClick={() => onClick(title)}
+                        >
+                            {`${isSelected ? '> ' : ''}${trimmedTitle}`}
+                        </li>
+                    );
+                })
             }
         </ul>
     );
