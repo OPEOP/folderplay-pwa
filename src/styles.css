@@ -26,3 +26,12 @@
 .audio {
     width: 80%;
 }
+
+.selectedSong {
+    font-weight: bold;
+}
+
+.icons {
+    width: 1rem;
+    height: 1rem;
+}

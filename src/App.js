@@ -1,9 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useFilePicker } from 'use-file-picker';
 import { useIndexedDBStore } from 'use-indexeddb';
+import {
+    PlayArrowRounded,
+    SkipNextRounded,
+    SkipPreviousRounded,
+    PauseRounded,
+    FolderOpenRounded
+} from '@material-ui/icons';
 
-import './App.css';
-import { RoundBtn } from './components';
+import './styles.css';
+import { IconBtn, TrackList } from './components';
+import { useAudioController } from './hooks';
+import { ReactComponent as Play } from './icons/play.svg';
+import { ReactComponent as Pause } from './icons/pause.svg';
+import { ReactComponent as Next } from './icons/next.svg';
+import { ReactComponent as Prev } from './icons/previous.svg';
 
 const SONGS_ID = 1;
 
@@ -12,38 +24,49 @@ const App = () => {
         readAs: 'DataURL',
         accept: '.mp3',
     });
-    const audioRef = useRef();
+    const [
+        {
+            isPlaying,
+            tracks,
+            currentTrack,
+            audioRef,
+        },
+        {
+            onPlay,
+            onPause,
+            onNextTrack,
+            onPrevTrack,
+            onTrackChange,
+        },
+        { onTracksChange }
+    ] = useAudioController([]);
     const { add, getByID, deleteByID } = useIndexedDBStore("files");
-    const [selectedSong, setSelectedSong] = useState(null);
-    const [songList, setSongList] = useState([]);
 
     useEffect(() => {
         getByID(SONGS_ID)
             .then(data => {
                 if (data) {
-                    const { songs } = data;
-                    setSelectedSong(songs[0]);
-                    setSongList(songs);
+                    const { tracks: newTracks } = data;
+                    onTracksChange(newTracks);
                 }
             })
             .catch(e => console.log('==>db get all error: ', e));
     }, []);
 
     const setAddedSongs = files => {
-        setSelectedSong(files[0]);
-        setSongList([...files]);
-        const songs = [];
+        onTracksChange(files)
+        const newTracks = [];
 
         files.forEach(file => {
-            songs.push({ name: file.name, content: file.content })
+            newTracks.push({ name: file.name, content: file.content })
         });
 
-        add({ songs, id: SONGS_ID }).catch(e => console.log('==>db add error: ', e));
+        add({ tracks: newTracks, id: SONGS_ID }).catch(e => console.log('==>db add error: ', e));
     };
 
     useEffect(() => {
         if (filesContent.length) {
-            if (songList.length) {
+            if (tracks.length) {
                 deleteByID(SONGS_ID)
                     .then(() => {
                         setAddedSongs(filesContent);
@@ -63,92 +86,49 @@ const App = () => {
         }
     };
 
-    const handleSelectListFile = (name) => {
-        const selected = songList.find(file => file.name === name);
-        setSelectedSong(selected);
-    };
-
-    console.log('==>audioRef', audioRef.current?.autoPlay);
+    const tracksNames = useMemo(() => tracks.map(({ name }) => name), [tracks]);
 
     // TODO: use clear css without any framework
     // TODO: Get controls and disign from https://codesandbox.io/s/react-audio-player-demo-zwhoc?file=/src/AudioPlayer.jsx
 
     return (
         <div className="container">
-                <div className="card">
-                    <div>
-                        <p textSize="heading" m={{ xs: "1rem" }}>PWA Player</p>
-                        <button
-                            onClick={handleClick}
-                            disable={loading}
-                            h="2rem"
-                            p={{ x: "0.75rem" }}
-                            textSize="caption"
-                            textColor="info700"
-                            hoverTextColor="info900"
-                            bg="white"
-                            hoverBg="info200"
-                            border="1px solid"
-                            borderColor="info700"
-                            hoverBorderColor="info900"
-                            m={{ r: "0.5rem" }}
-                        >
-                            Choose Folder
-                        </button>
-                        <ul>
-                            {
-                                songList.map((file) => (
-                                    <li
-                                        className="pointer"
-                                        key={file.name}
-                                        onClick={() => handleSelectListFile(file.name)}
-                                    >
-                                        <p
-                                            textColor={file.name === selectedSong?.name ? "success700" : "success500"}>
-                                            {file.name}
-                                        </p>
-                                    </li>
-                                ))
-                            }
-                        </ul>
-                    </div>
-                    <audio
-                        ref={audioRef}
-                        className="audio"
-                        controls
-                        src={selectedSong?.content}
-                        autoPlay
-                    >
-                        Your browser does not support the
-                        <code>audio</code> element.
-                    </audio>
-                    <div
-                        d="flex"
-                        align="center"
-                        flexDir="row"
-                        justify="center"
-                        p={{ xs: "2rem" }}
-                    >
-                        <RoundBtn icon="PlayPrev" color="success" />
-                        <button
-                            h="3.5rem"
-                            w="3.5rem"
-                            bg="success800"
-                            hoverBg="success600"
-                            rounded="circle"
-                            m={{ r: "1rem" }}
-                            shadow="2"
-                            hoverShadow="4"
-                        >
-                            <icon name="Play" size="18px" color="white" />
-                            /
-                            <icon name="Pause" size="18px" color="white" />
-                        </button>
-                        <RoundBtn icon="Stop" color="brand" />
-                        <RoundBtn icon="PlayNext" color="success" />
-                    </div>
-
+            <div className="card">
+                <div>
+                    <p>PWA Player</p>
+                    <IconBtn
+                        onClick={handleClick}
+                        Icon={FolderOpenRounded}
+                    />
+                    <TrackList
+                        tracks={tracksNames}
+                        selected={currentTrack?.name}
+                        onClick={onTrackChange}
+                    />
                 </div>
+                <audio
+                    hidden
+                    ref={audioRef}
+                    className="audio"
+                    controls
+                    src={currentTrack?.content}
+                    autoPlay
+                >
+                    Your browser does not support the
+                    <code>audio</code> element.
+                </audio>
+                <div>
+                    <IconBtn onClick={onPrevTrack} Icon={Prev} />
+                    {
+                        isPlaying
+                            ? <IconBtn onClick={onPause} Icon={Pause} />
+                            : <IconBtn onClick={onPlay} Icon={Play} />
+
+                    }
+                    <IconBtn onClick={onNextTrack} Icon={Next} />
+                </div>
+
+            </div>
         </div>
     );
 };

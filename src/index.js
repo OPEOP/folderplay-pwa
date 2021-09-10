@@ -15,7 +15,7 @@ const idbConfig = {
             name: "files",
             id: { keyPath: "id" },
             indices: [
-                { name: "songs", keyPath: "songs" },
+                { name: "tracks", keyPath: "tracks" },
             ],
         }
     ]
