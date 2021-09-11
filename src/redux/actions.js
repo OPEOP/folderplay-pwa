@@ -1,6 +1,6 @@
 import { ACTION_TYPES } from '../constants';
 
-const startTrack = () => ({
+const playTrack = () => ({
   type: ACTION_TYPES.STARTED_TRACK
 });
 
@@ -30,12 +30,18 @@ const changeTrack = (trackName) => ({
     payload: { trackName }
 });
 
+const changeProgressBar = (progress) => ({
+    type: ACTION_TYPES.CHANGED_PROGRESS_BAR,
+    payload: { progress }
+});
+
 export default {
-    startTrack,
+    playTrack,
     pauseTrack,
     stopTrack,
     nextTrack,
     prevTrack,
     changeTracks,
     changeTrack,
+    changeProgressBar,
 };

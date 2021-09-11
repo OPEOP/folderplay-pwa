@@ -32,7 +32,7 @@ const useAudioController = ({ tracks = [] }) => {
     }, [state.isPlaying]);
 
     const onPlay = () => {
-        dispatch(actions.startTrack());
+        dispatch(actions.playTrack());
     };
 
     const onPause = () => {
@@ -55,6 +55,19 @@ const useAudioController = ({ tracks = [] }) => {
         dispatch(actions.changeTrack(name));
     };
 
+    const onProgressBarChange = ({target: {value}}) => {
+        clearInterval(intervalRef.current);
+        audioRef.current.currentTime = value;
+        setTrackProgress(audioRef.current?.currentTime);
+    };
+
+    const onProgressBarChangeEnd = () => {
+        if (!state.isPlaying) {
+            dispatch(actions.playTrack());
+        }
+        startTimer();
+    };
+
     return [
         {
             ...state,
@@ -68,6 +81,8 @@ const useAudioController = ({ tracks = [] }) => {
             onNextTrack,
             onPrevTrack,
             onTrackChange,
+            onProgressBarChange,
+            onProgressBarChangeEnd,
         },
         {
             onTracksChange

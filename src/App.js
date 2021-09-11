@@ -33,6 +33,8 @@ const App = () => {
             onNextTrack,
             onPrevTrack,
             onTrackChange,
+            onProgressBarChange,
+            onProgressBarChangeEnd,
         },
         { onTracksChange }
     ] = useAudioController([]);
@@ -116,7 +118,10 @@ const App = () => {
                     value={trackProgress}
                     step="1"
                     min="0"
-                    max={duration}
+                    max={duration ? duration : 0}
+                    onChange={onProgressBarChange}
+                    onMouseUp={onProgressBarChangeEnd}
+                    onDragEnd={onProgressBarChangeEnd}
                 />
                 <div className="btnGroup">
                     <IconBtn onClick={onPrevTrack} Icon={Prev} />
