@@ -5,7 +5,7 @@ const TrackList = ({ tracks, selected, onClick }) => {
     return (
         <ul className="trackList">
             {
-                tracks.map(title => {
+                tracks.map((title, index) => {
                     const trimmedTitle = title.slice(0, title.length - 3);
                     const isSelected = title === selected;
 
@@ -15,7 +15,7 @@ const TrackList = ({ tracks, selected, onClick }) => {
                             key={title}
                             onClick={() => onClick(title)}
                         >
-                            {`${isSelected ? '> ' : ''}${trimmedTitle}`}
+                            {`${isSelected ? '> ' : ''}${index + 1}. ${trimmedTitle}`}
                         </li>
                     );
                 })

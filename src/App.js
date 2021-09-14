@@ -13,6 +13,8 @@ import { ReactComponent as Folder } from './icons/folder.svg';
 
 const SONGS_ID = 1;
 
+// TODO: Add saving of last played track position
+
 const App = () => {
     const [openFileSelector, { filesContent, loading }] = useFilePicker({
         readAs: 'DataURL',
@@ -112,6 +114,7 @@ const App = () => {
                     Your browser does not support the
                     <code>audio</code> element.
                 </audio>
+                <p>{`${duration ? duration : '00:00'}`}</p>
                 <input
                     className="progress"
                     type="range"
