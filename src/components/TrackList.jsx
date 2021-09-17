@@ -15,7 +15,7 @@ const TrackList = ({ tracks, selected, onClick }) => {
                             key={title}
                             onClick={() => onClick(title)}
                         >
-                            {`${isSelected ? '> ' : ''}${index + 1}. ${trimmedTitle}`}
+                            {`${index + 1}. ${trimmedTitle}`}
                         </li>
                     );
                 })

@@ -91,52 +91,61 @@ const App = () => {
     // TODO: use clear css without any framework
     // TODO: Get controls and disign from https://codesandbox.io/s/react-audio-player-demo-zwhoc?file=/src/AudioPlayer.jsx
 
+    const getReadableDuration = duration => {
+        if (!duration) {
+            return '00:00:00';
+        }
+
+        const options = {hour: '2-digit', minute: '2-digit', second: '2-digit'}
+        const durationDate = new Date(duration * 1000);
+
+        return durationDate.toTimeString().split(' ')[0];
+    }
+
     return (
-        <div className="container">
-            <div className="card">
-                <IconBtn
-                    onClick={handleClick}
-                    Icon={Folder}
-                />
-                <TrackList
-                    tracks={tracksNames}
-                    selected={currentTrack?.name}
-                    onClick={onTrackChange}
-                />
-                <audio
-                    hidden
-                    ref={audioRef}
-                    className="audio"
-                    controls
-                    src={currentTrack?.content}
-                    autoPlay
-                >
-                    Your browser does not support the
-                    <code>audio</code> element.
-                </audio>
-                <p>{`${duration ? duration : '00:00'}`}</p>
-                <input
-                    className="progress"
-                    type="range"
-                    value={trackProgress}
-                    step="1"
-                    min="0"
-                    max={duration ? duration : 0}
-                    onChange={onProgressBarChange}
-                    onMouseUp={onProgressBarChangeEnd}
-                    onDragEnd={onProgressBarChangeEnd}
-                />
-                <div className="btnGroup">
-                    <IconBtn onClick={onPrevTrack} Icon={Prev} />
-                    {
-                        isPlaying
-                            ? <IconBtn onClick={onPause} Icon={Pause} />
-                            : <IconBtn onClick={onPlay} Icon={Play} />
+        <div className="card">
+            <IconBtn
+                onClick={handleClick}
+                Icon={Folder}
+            />
+            <img className="trackImg" alt="autumn" />
+            <TrackList
+                tracks={tracksNames}
+                selected={currentTrack?.name}
+                onClick={onTrackChange}
+            />
+            <audio
+                hidden
+                ref={audioRef}
+                className="audio"
+                controls
+                src={currentTrack?.content}
+                autoPlay
+            >
+                Your browser does not support the
+                <code>audio</code> element.
+            </audio>
+            <p>{getReadableDuration(duration - trackProgress)}</p>
+            <input
+                className="progress"
+                type="range"
+                value={trackProgress}
+                step="1"
+                min="0"
+                max={duration ? duration : 0}
+                onChange={onProgressBarChange}
+                onMouseUp={onProgressBarChangeEnd}
+                onDragEnd={onProgressBarChangeEnd}
+            />
+            <div className="btnGroup">
+                <IconBtn onClick={onPrevTrack} Icon={Prev} />
+                {
+                    isPlaying
+                        ? <IconBtn onClick={onPause} Icon={Pause} />
+                        : <IconBtn onClick={onPlay} Icon={Play} />
 
-                    }
-                    <IconBtn onClick={onNextTrack} Icon={Next} />
-                </div>
-
+                }
+                <IconBtn onClick={onNextTrack} Icon={Next} />
             </div>
         </div>
     );
