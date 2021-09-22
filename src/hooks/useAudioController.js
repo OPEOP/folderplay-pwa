@@ -3,8 +3,16 @@ import { useEffect, useReducer, useRef, useState } from 'react';
 import { audioReducer, initState, actions } from '../redux';
 
 const useAudioController = ({ tracks = [] }) => {
-    const [state, dispatch] = useReducer(audioReducer, { ...initState, tracks });
+    const [{
+        isPlaying,
+        tracks: initiatedTracks,
+        currentTrack
+    }, dispatch] = useReducer(audioReducer, {
+        ...initState,
+        tracks
+    });
     const [trackProgress, setTrackProgress] = useState(0);
+    const [duration, setDuration] = useState(0);
 
     const audioRef = useRef();
     const intervalRef = useRef();
@@ -22,14 +30,18 @@ const useAudioController = ({ tracks = [] }) => {
     };
 
     useEffect(() => {
-        if (state.isPlaying) {
+        if (isPlaying) {
             audioRef.current?.play();
             startTimer();
         } else {
             audioRef.current?.pause();
             clearInterval(intervalRef.current);
         }
-    }, [state.isPlaying]);
+    }, [isPlaying, currentTrack]);
+
+    useEffect(() => {
+        setDuration(audioRef.current?.duration)
+    }, [audioRef.current?.duration])
 
     const onPlay = () => {
         dispatch(actions.playTrack());
@@ -55,14 +67,14 @@ const useAudioController = ({ tracks = [] }) => {
         dispatch(actions.changeTrack(name));
     };
 
-    const onProgressBarChange = ({target: {value}}) => {
+    const onProgressBarChange = ({ target: { value } }) => {
         clearInterval(intervalRef.current);
         audioRef.current.currentTime = value;
         setTrackProgress(audioRef.current?.currentTime);
     };
 
     const onProgressBarChangeEnd = () => {
-        if (!state.isPlaying) {
+        if (!isPlaying) {
             dispatch(actions.playTrack());
         }
         startTimer();
@@ -70,8 +82,10 @@ const useAudioController = ({ tracks = [] }) => {
 
     return [
         {
-            ...state,
-            duration: audioRef.current?.duration,
+            isPlaying,
+            tracks: initiatedTracks,
+            currentTrack,
+            duration,
             trackProgress,
             audioRef
         },

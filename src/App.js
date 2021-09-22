@@ -96,10 +96,9 @@ const App = () => {
             return '00:00:00';
         }
 
-        const options = {hour: '2-digit', minute: '2-digit', second: '2-digit'}
         const durationDate = new Date(duration * 1000);
 
-        return durationDate.toTimeString().split(' ')[0];
+        return durationDate.toUTCString().split(' ')[4];
     }
 
     return (
@@ -120,7 +119,6 @@ const App = () => {
                 className="audio"
                 controls
                 src={currentTrack?.content}
-                autoPlay
             >
                 Your browser does not support the
                 <code>audio</code> element.
